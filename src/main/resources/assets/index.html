@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html>
+<script src="ship.js"></script>
+<script src="sectionController.js"></script>
+
+<body style="padding:0;margin:0;overflow:hidden;">
+
+    <canvas id="canvas" style="background-size: 100% 100%;" /> Your browser does not support the canvas element.</canvas>
+
+    <script>
+        function ClientCoordinate(x, y) {
+            this.x = Math.round(x);
+            this.y = Math.round(y);
+        }
+
+        function Coordinate(x, y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        function Event(type, data) {
+            this.type;
+            this.data;
+        }
+
+        var canvas = document.getElementById('canvas');
+
+        var width = canvas.width = window.innerWidth;
+        var height = canvas.height = window.innerHeight;
+
+        var context = canvas.getContext('2d');
+
+        var corner = new ClientCoordinate(0, 0);
+        var mouseDownCoordinate = new ClientCoordinate(0, 0);
+        var mouseDownCoordinateWithCornerOffset = new ClientCoordinate(0, 0);
+
+        var drag = false;
+        var scale = 1;
+        var gridSize = 42;
+
+        var exampleSocket = new WebSocket("ws://localhost.com:8025/");
+
+        var objects = [];
+
+        canvas.oncontextmenu = function(event) {
+            event.preventDefault();
+
+            var x = event.pageX,
+                y = event.pageY;
+            shipTargetCoordinate = new Coordinate(x + corner.x, y + corner.y);
+
+            for (var i = 0; i < objects.length; i++) {
+                var ship = objects[i];
+                if (ship.isSelected()) {
+                    exampleSocket.send(JSON.stringify({
+                        "eventType": "MOVE",
+                        "eventSubject": {
+                            "id": ship.getName()
+                        },
+                        "eventData": {
+                            "x": shipTargetCoordinate.x,
+                            "y": shipTargetCoordinate.y
+                        }
+                    }));
+                }
+            }
+
+        };
+
+        canvas.addEventListener('mouseleave', function(event) {
+            var x = event.pageX,
+                y = event.pageY;
+            drag = false;
+            resetSections();
+        }, false);
+        canvas.addEventListener('mousedown', function(event) {
+            if (event.buttons == 1) {
+                var x = event.pageX,
+                    y = event.pageY;
+                var mousePosition = new ClientCoordinate(x, y);
+
+                mouseDownCoordinate.x = mousePosition.x;
+                mouseDownCoordinate.y = mousePosition.y;
+
+                mouseDownCoordinateWithCornerOffset.x = mouseDownCoordinate.x + corner.x;
+                mouseDownCoordinateWithCornerOffset.y = mouseDownCoordinate.y + corner.y;
+
+                drag = true;
+            }
+
+        }, false);
+
+        canvas.addEventListener('mousewheel', function(event) {
+            if (event.wheelDeltaY < 0) {
+                if (scale > 1) {
+                    scale -= 0.5;
+                }
+            } else {
+                scale += 0.5;
+            }
+            scale.toPrecision(2);
+            drawScene();
+        }, false);
+        canvas.addEventListener('mouseup', function(event) {
+            drag = false;
+
+            if (event.button == 0) {
+                var x = event.pageX,
+                    y = event.pageY;
+
+                var mouseUpCoordinate = new ClientCoordinate(x, y);
+
+                var movedOnX = Math.abs(mouseDownCoordinate.x - mouseUpCoordinate.x) == 0;
+                var movedOnY = Math.abs(mouseDownCoordinate.y - mouseUpCoordinate.y) == 0;
+
+                if (movedOnX && movedOnY) {
+                    for (var i = 0; i < objects.length; i++) {
+                        var ship = objects[i];
+                        if (ship.isOnShape(mouseUpCoordinate)) {
+                            ship.setSelected(!ship.isSelected());
+                        } else {
+                            ship.setSelected(false);
+                        }
+
+                    }
+                    drawScene();
+                }
+
+            }
+
+        }, false);
+        canvas.addEventListener('mousemove', function(event) {
+            var x = event.pageX,
+                y = event.pageY;
+            var mousePosition = new ClientCoordinate(x, y);
+
+            if (drag) {
+                corner.x = mouseDownCoordinateWithCornerOffset.x - mousePosition.x;
+                corner.y = mouseDownCoordinateWithCornerOffset.y - mousePosition.y;
+
+                drawScene();
+            }
+        }, false);
+        canvas.addEventListener('mousemove', sectionController, false);
+
+        window.addEventListener('resize', resizeCanvas, false);
+
+        function resizeCanvas() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+
+            drawScene();
+        }
+
+        function drawScene() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBoard();
+            drawShips();
+        }
+
+        function drawBoard() {
+            context.fillText(corner.x, 30, 30);
+            context.fillText(corner.y, 30, 40);
+
+            context.beginPath();
+
+            var offsetX = corner.x % gridSize * scale;
+            var offsetY = corner.y % gridSize * scale;
+
+            for (var x = 0; x <= width; x += gridSize * scale) {
+                context.fillText(x - offsetX, x - offsetX, 10);
+                context.moveTo(x - offsetX, 0);
+                context.lineTo(x - offsetX, height);
+            }
+            for (var y = 0; y <= height; y += gridSize * scale) {
+                context.fillText(y - offsetY, 5, y - offsetY);
+                context.moveTo(0, y - offsetY);
+                context.lineTo(width, y - offsetY);
+            }
+            context.strokeStyle = "black";
+            context.lineWidth = 0.2;
+            context.stroke();
+
+            context.closePath();
+        }
+
+        function drawShips() {
+            for (var i = 0; i < objects.length; i++) {
+                var ship = objects[i];
+                var shipCurrentCoordinate = ship.getScreenCoordinate();
+
+                drawShipRoute(ship);
+                drawShipSelection(ship);
+
+                context.beginPath();
+                context.drawImage(ship.getShape(), shipCurrentCoordinate.x, shipCurrentCoordinate.y);
+                context.closePath();
+
+            }
+        }
+
+        function drawShipSelection(ship) {
+            if (ship.isSelected()) {
+                var shipCurrentCoordinate = ship.getScreenCoordinate();
+                context.beginPath();
+                context.arc(shipCurrentCoordinate.x + ship.getWidth() / 2, shipCurrentCoordinate.y + ship.getHeight() / 2, 30, 0, 2 * Math.PI, false);
+                context.lineWidth = 2;
+                context.strokeStyle = 'blue';
+                context.stroke();
+                context.closePath();
+            }
+
+        }
+
+        function drawShipRoute(ship) {
+            if (ship.hasDestination()) {
+                var shipCurrentCoordinate = ship.getCenterCoordinate();
+                var destinations = ship.getDestinations();
+
+                var previousDestination;
+                for (var i = 0; i < destinations.length; i++) {
+                    var destination = destinations[i];
+                    context.beginPath();
+                    var startX, startY, destinationX, destinationY, rotation;
+
+                    if (previousDestination) {
+                        startX = previousDestination.x - corner.x;
+                        startY = previousDestination.y - corner.y;
+
+                        destinationX = destination.x - corner.x;
+                        destinationY = destination.y - corner.y;
+                    } else {
+                        startX = shipCurrentCoordinate.x;
+                        startY = shipCurrentCoordinate.y;
+
+                        destinationX = destination.x - corner.x;
+                        destinationY = destination.y - corner.y;
+                    }
+                    context.moveTo(startX, startY);
+                    context.lineTo(destinationX, destinationY);
+                    context.lineWidth = 3;
+                    context.strokeStyle = 'grey';
+                    context.stroke();
+
+                    var rotation = -Math.atan2(startX - destinationX, startY - destinationY);
+                    arrowHead(destinationX, destinationY, rotation);
+                    previousDestination = destination;
+                    context.closePath();
+                }
+
+            }
+        }
+
+        function arrowHead(x, y, rotation) {
+            context.save();
+
+            context.translate(x, y);
+            context.rotate(rotation + Math.PI);
+            context.beginPath();
+            context.moveTo(0, 0);
+            context.lineTo(-5, -12);
+            context.lineTo(5, -12);
+            context.closePath();
+            context.fillStyle = 'grey';
+            context.fill();
+            context.strokeStyle = 'grey';
+            context.stroke();
+
+            context.restore();
+        }
+
+        function login(userName) {
+            var xmlhttp = new XMLHttpRequest();
+            var url = "app/login?userName=" + userName;
+
+            xmlhttp.onreadystatechange = function() {
+                if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+                    console.log("init game placeholder");
+                }
+            };
+            xmlhttp.open("GET", url, true);
+            xmlhttp.send();
+        }
+
+        exampleSocket.onmessage = function(event) {
+            var gameEvent = JSON.parse(event.data);
+
+            if ("LOCATION_CHANGED" == gameEvent.eventType) {
+                var subject = gameEvent.eventData.id;
+                var shipCoordinate = gameEvent.eventData.coord;
+                var destinations = gameEvent.eventData.route;
+
+                if (objects.length == 0) {
+                    var ship = new Ship(subject, shipCoordinate);
+                    objects.push(ship);
+                } else {
+                    objects[0].setName(subject);
+                    objects[0].setCoordinate(shipCoordinate);
+                    objects[0].setDestinations(destinations);
+                }
+            } else if ("TARGET_REACHED" == gameEvent.eventType) {
+                var subject = gameEvent.eventData;
+                var newCoordinate = gameEvent.eventData.coord;
+
+                console.log('Your ship ' + subject.id + ' reached ' + subject.coord.x + ' and ' + subject.coord.y);
+            } else if ("STOPPED" == gameEvent.eventType) {
+                var subject = gameEvent.eventData.id;
+                console.log('Your ship ' + subject + ' stopped');
+            }
+            requestAnimationFrame(drawScene);
+        }
+        exampleSocket.onopen = function(event) {
+            var userName = "Bela";
+            login(userName)
+            exampleSocket.send(JSON.stringify({
+                "eventType": "LOGIN",
+                "eventSubject": {
+                    "playerId": {
+                        "id": userName
+                    }
+                },
+                "eventData": {
+                    "screenWidth": canvas.width,
+                    "screenHeight": canvas.height
+                }
+            }));
+        }
+        resizeCanvas();
+    </script>
+
+</body>
+
+</html>

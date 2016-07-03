@@ -1,7 +1,7 @@
 package com.github.pozo;
 
-import com.github.pozo.game.server.control.EventParser;
-import com.github.pozo.game.server.control.UserEvent;
+import com.github.pozo.game.server.control.event.EventParser;
+import com.github.pozo.game.server.control.event.user.UserEvent;
 import com.github.pozo.game.server.serialize.json.JSONEventSerializer;
 
 import javax.websocket.DecodeException;

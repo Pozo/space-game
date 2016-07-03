@@ -9,6 +9,7 @@ public class MassUnit implements Units {
     public MassUnit(float value) {
         this.value = value;
     }
+
     public double getValue() {
         return value;
     }

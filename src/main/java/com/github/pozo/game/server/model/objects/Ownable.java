@@ -5,8 +5,10 @@ package com.github.pozo.game.server.model.objects;
  */
 public interface Ownable {
     boolean hasOwner();
-    void setOwner(Owner owner);
+
     void removeOwner();
 
     Owner getOwner();
+
+    void setOwner(Owner owner);
 }

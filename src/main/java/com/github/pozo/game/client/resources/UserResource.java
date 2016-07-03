@@ -4,9 +4,6 @@ import com.codahale.metrics.annotation.Timed;
 import com.github.pozo.game.client.auth.UserService;
 import com.github.pozo.game.client.core.UnprocessableEntityResponse;
 
-import org.glassfish.grizzly.http.CookiesBuilder;
-import org.glassfish.jersey.message.internal.NewCookieProvider;
-
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
@@ -40,20 +37,21 @@ public class UserResource {
     @Timed
     public Response loginUser(@QueryParam(QUERY_PARAM_USER_NAME) String name) {
         try {
-            if(validName(name)) {
-                Cookie cookie = new Cookie(COOKIE_NAME, TOKEN_FOR_TEST,"/", DOMAIN);
+            if (validName(name)) {
+                Cookie cookie = new Cookie(COOKIE_NAME, TOKEN_FOR_TEST, "/", DOMAIN);
                 NewCookie authToken = new NewCookie(cookie);
 
                 return Response.ok().cookie(authToken).build();
             } else {
                 throw new WebApplicationException(String.format("'%s' parameter should not be empty!", QUERY_PARAM_USER_NAME));
             }
-        } catch(Exception exception) {
+        } catch (Exception exception) {
             return UnprocessableEntityResponse.getResponse(exception);
         }
 
     }
+
     private boolean validName(String name) {
-        return name!= null && !name.equals("");
+        return name != null && !name.equals("");
     }
 }

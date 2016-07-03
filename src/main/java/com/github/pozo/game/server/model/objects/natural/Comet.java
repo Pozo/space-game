@@ -10,7 +10,7 @@ import com.github.pozo.game.server.model.unit.time.modelevents.TimeModelEvent;
  */
 public class Comet extends DefaultAstronomicalObject {
     Comet(DistanceUnit diameter, MassUnit mass, Coordinate coordinate, String id) {
-        super(diameter,mass,coordinate,id);
+        super(diameter, mass, coordinate, id);
     }
 
     public void consume(TimeModelEvent event) {

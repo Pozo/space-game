@@ -15,35 +15,40 @@ Ship.prototype.selected = false;
 Ship.prototype.destinations = [];
 
 Ship.prototype.setCoordinate = function(newCoordinate) {
+    var modelCoordinate = new ModelCoordinate(newCoordinate.x, newCoordinate.y);
     this.previousCoordinate = this.currentCoordinate;
-    this.currentCoordinate = newCoordinate;
+    this.currentCoordinate = modelCoordinate.asClientCoordinate();
 }
 Ship.prototype.getCoordinate = function() {
     return this.currentCoordinate;
 }
 Ship.prototype.getCenterCoordinate = function() {
-    return new Coordinate(
-        (this.currentCoordinate.x - corner.x),
-        (this.currentCoordinate.y - corner.y)
+    var clientCornerCoordinate = playerProperties.getScreenCorner();
+
+    return new ClientCoordinate(
+        (this.currentCoordinate.getX() - clientCornerCoordinate.getX()),
+        (this.currentCoordinate.getY() - clientCornerCoordinate.getY())
     );
 }
 Ship.prototype.getScreenCoordinate = function() {
-    return new Coordinate(
-        (this.currentCoordinate.x - this.shape.width / 2) - corner.x,
-        (this.currentCoordinate.y - this.shape.height / 2) - corner.y
+    var clientCornerCoordinate = playerProperties.getScreenCorner();
+
+    return new ClientCoordinate(
+        (this.currentCoordinate.getX() - this.shape.width / 2) - clientCornerCoordinate.getX(),
+        (this.currentCoordinate.getY() - this.shape.height / 2) - clientCornerCoordinate.getY()
     );
 }
 Ship.prototype.isOnShape = function(coordinate) {
     var screenCoordinate = this.getCenterCoordinate();
 
-    var topLeftCorner = screenCoordinate.x - this.shape.width / 2;
-    var topRightCorner = screenCoordinate.x + this.shape.width / 2;
+    var topLeftCorner = screenCoordinate.getX() - this.shape.width / 2;
+    var topRightCorner = screenCoordinate.getX() + this.shape.width / 2;
 
-    var bottomLeftCorner = screenCoordinate.y - this.shape.height / 2;
-    var bottomRightCorner = screenCoordinate.y + this.shape.height / 2;
+    var bottomLeftCorner = screenCoordinate.getY() - this.shape.height / 2;
+    var bottomRightCorner = screenCoordinate.getY() + this.shape.height / 2;
 
-    var betweenX = coordinate.x > topLeftCorner && coordinate.x < topRightCorner;
-    var betweenY = coordinate.y > bottomLeftCorner && coordinate.y < bottomRightCorner;
+    var betweenX = coordinate.getX() > topLeftCorner && coordinate.getX() < topRightCorner;
+    var betweenY = coordinate.getY() > bottomLeftCorner && coordinate.getY() < bottomRightCorner;
 
     return betweenX && betweenY;
 }
@@ -59,15 +64,22 @@ Ship.prototype.getName = function() {
 Ship.prototype.getPreviousCoordinate = function() {
     return this.previousCoordinate;
 }
-
 Ship.prototype.addDestination = function(destination) {
-    this.destinations.push(destination);
+    var modelCoordinate = new ModelCoordinate(destination.x, destination.y);
+    this.destinations.push(modelCoordinate.asClientCoordinate());
 }
 Ship.prototype.getDestinations = function() {
     return this.destinations;
 }
 Ship.prototype.setDestinations = function(destinations) {
-    this.destinations = destinations;
+    this.destinations = [];
+
+    for (var destination in destinations) {
+        if (destinations.hasOwnProperty(destination)) {
+            this.addDestination(destinations[destination]);
+        }
+    }
+
 }
 Ship.prototype.setSelected = function(selected) {
     this.selected = selected;

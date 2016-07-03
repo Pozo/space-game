@@ -12,6 +12,7 @@ public class StarSystemBuilder {
         this.star = star;
         return this;
     }
+
     public StarSystemBuilder withAstronomicalObject(DistanceUnit orbit, DefaultAstronomicalObject defaultAstronomicalObject) {
         this.astronomicalObjects.put(orbit, defaultAstronomicalObject);
         return this;

@@ -1,7 +1,5 @@
 package com.github.pozo.game.client.core;
 
-import java.lang.*;
-
 import javax.ws.rs.core.Response;
 
 /**
@@ -10,7 +8,8 @@ import javax.ws.rs.core.Response;
 public class UnprocessableEntityResponse {
     public static final int STATUS_CODE = 422;
 
-    private UnprocessableEntityResponse() {}
+    private UnprocessableEntityResponse() {
+    }
 
     public static Response getResponse(Exception e) {
         return Response.status(STATUS_CODE).entity(new Error(e.getMessage())).build();

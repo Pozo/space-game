@@ -12,9 +12,11 @@ public abstract class ModelEventProducer<T extends ModelEvent> {
     public void addConsumer(ModelEventConsumer modelEventConsumer) {
         modelEventConsumerList.add(modelEventConsumer);
     }
+
     public void addAllConsumer(List<ModelEventConsumer> modelEventConsumers) {
         modelEventConsumerList.addAll(modelEventConsumers);
     }
+
     public void removeConsumer(ModelEventConsumer modelEventConsumer) {
         modelEventConsumerList.remove(modelEventConsumer);
     }
@@ -22,5 +24,6 @@ public abstract class ModelEventProducer<T extends ModelEvent> {
     public List<ModelEventConsumer> getConsumers() {
         return modelEventConsumerList;
     }
+
     public abstract void produce(T event);
 }

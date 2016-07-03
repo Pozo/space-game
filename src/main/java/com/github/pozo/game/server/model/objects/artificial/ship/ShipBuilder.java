@@ -1,9 +1,9 @@
 package com.github.pozo.game.server.model.objects.artificial.ship;
 
 import com.github.pozo.game.server.model.objects.Owner;
+import com.github.pozo.game.server.model.objects.artificial.ship.modelevent.ShipModelEventProducer;
 import com.github.pozo.game.server.model.unit.Coordinate;
 import com.github.pozo.game.server.model.unit.Route;
-import com.github.pozo.game.server.model.objects.artificial.ship.modelevent.ShipModelEventProducer;
 
 public class ShipBuilder {
     private Coordinate coordinate;

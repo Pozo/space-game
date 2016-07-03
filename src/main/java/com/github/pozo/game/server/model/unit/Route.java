@@ -20,12 +20,15 @@ public class Route {
     public List<Coordinate> getDestinations() {
         return coordinates;
     }
+
     public boolean hasDestination() {
         return !coordinates.isEmpty();
     }
+
     public Coordinate removeFirstDestination() {
         return coordinates.removeFirst();
     }
+
     public Coordinate getNextDestination() {
         return coordinates.getFirst();
     }

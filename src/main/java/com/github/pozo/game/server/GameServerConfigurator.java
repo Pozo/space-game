@@ -1,12 +1,7 @@
 package com.github.pozo.game.server;
 
-import org.eclipse.jetty.server.UserIdentity;
-
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-import javax.websocket.ClientEndpointConfig;
 import javax.websocket.HandshakeResponse;
 import javax.websocket.server.HandshakeRequest;
 import javax.websocket.server.ServerEndpointConfig;
@@ -16,6 +11,7 @@ import javax.websocket.server.ServerEndpointConfig;
  */
 public class GameServerConfigurator extends ServerEndpointConfig.Configurator {
     private static final String TOKEN_NAME = "auth-token";
+
     @Override
     public void modifyHandshake(ServerEndpointConfig sec, HandshakeRequest request, HandshakeResponse response) {
         List<String> cookieList = request.getHeaders().get("Cookie");
@@ -27,7 +23,7 @@ public class GameServerConfigurator extends ServerEndpointConfig.Configurator {
         for (String cookie : cookieList) {
             String[] cookieKeyValue = cookie.split("=");
 
-            if(TOKEN_NAME.equals(cookieKeyValue[0])) {
+            if (TOKEN_NAME.equals(cookieKeyValue[0])) {
                 System.out.println("token = " + cookieKeyValue[1]);
             }
         }

@@ -1,14 +1,14 @@
 package com.github.pozo.game.server.serialize.json;
 
-import com.github.pozo.game.server.control.GameUserEvent;
-import com.github.pozo.game.server.control.GameUserEventType;
-import com.github.pozo.game.server.control.UserEvent;
+import com.github.pozo.game.server.control.event.user.GameUserEvent;
+import com.github.pozo.game.server.control.event.user.GameUserEventType;
+import com.github.pozo.game.server.control.event.user.UserEvent;
 import com.github.pozo.game.server.model.ModelEvent;
 import com.github.pozo.game.server.model.objects.artificial.ship.Ship;
 import com.github.pozo.game.server.model.objects.artificial.ship.userevent.ShipUserEvent;
 import com.github.pozo.game.server.model.objects.artificial.ship.userevent.ShipUserEventTypes;
 import com.github.pozo.game.server.model.objects.meta.Player;
-import com.github.pozo.game.server.model.objects.meta.PlayerSettings;
+import com.github.pozo.game.server.model.objects.meta.PlayerProperties;
 import com.github.pozo.game.server.model.unit.Coordinate;
 import com.github.pozo.game.server.serialize.EventSerializer;
 import com.google.gson.Gson;
@@ -30,6 +30,25 @@ import java.lang.reflect.Type;
 public class JSONEventSerializer implements EventSerializer {
     private final Gson gson;
 
+    public JSONEventSerializer() {
+        this.gson = new GsonBuilder().registerTypeAdapter(Ship.class, new ShipSerializer())
+                .registerTypeAdapter(UserEvent.class, new UserEventDeserializer())
+                .create();
+
+    }
+
+    public String serialize(ModelEvent modelEvent) {
+        return gson.toJson(modelEvent);
+    }
+
+    public String serialize(UserEvent modelEvent) {
+        return gson.toJson(modelEvent);
+    }
+
+    public UserEvent deserialize(String finalMessage) {
+        return gson.fromJson(finalMessage, UserEvent.class);
+    }
+
     public class ShipSerializer implements JsonSerializer<Ship> {
 
         public JsonElement serialize(Ship ship, Type type, JsonSerializationContext jsonSerializationContext) {
@@ -40,6 +59,7 @@ public class JSONEventSerializer implements EventSerializer {
             return jsonObject;
         }
     }
+
     private class UserEventDeserializer implements JsonDeserializer<UserEvent> {
 
         public UserEvent deserialize(JsonElement jsonElement, Type type, JsonDeserializationContext jsonDeserializationContext) throws JsonParseException {
@@ -48,33 +68,27 @@ public class JSONEventSerializer implements EventSerializer {
             JsonElement eventSubject = asJsonObject.get("eventSubject");
             JsonElement eventData = asJsonObject.get("eventData");
 
-            if(ShipUserEventTypes.MOVE.toString().equals(eventType.getAsString())) {
+            if (ShipUserEventTypes.MOVE.toString().equals(eventType.getAsString())) {
 
                 return ShipUserEvent.createShipUserEvent(ShipUserEventTypes.valueOf(eventType.getAsString()),
                         (Ship) jsonDeserializationContext.deserialize(eventSubject, Ship.class),
                         (Coordinate) jsonDeserializationContext.deserialize(eventData, Coordinate.class));
-            } else if(GameUserEventType.LOGIN.toString().equals(eventType.getAsString())) {
+            } else if (GameUserEventType.LOGIN.toString().equals(eventType.getAsString())) {
 
-                return GameUserEvent.createLoginEvent((Player) jsonDeserializationContext.deserialize(eventSubject, Player.class),
-                        (PlayerSettings) jsonDeserializationContext.deserialize(eventData, PlayerSettings.class));
+                final Player player = (Player) jsonDeserializationContext.deserialize(eventSubject, Player.class);
+                final PlayerProperties playerProperties = (PlayerProperties) jsonDeserializationContext.deserialize(eventData, PlayerProperties.class);
+
+                return GameUserEvent.createLoginEvent(player,
+                        (PlayerProperties) jsonDeserializationContext.deserialize(eventData, PlayerProperties.class));
+            } else if (GameUserEventType.CHANGE_PREFERENCES.toString().equals(eventType.getAsString())) {
+                final Player player = (Player) jsonDeserializationContext.deserialize(eventSubject, Player.class);
+                final PlayerProperties playerProperties = (PlayerProperties) jsonDeserializationContext.deserialize(eventData, PlayerProperties.class);
+
+                return GameUserEvent.createChangePreferencesEvent(player,
+                        playerProperties);
             } else {
-                return UserEvent.createEvent(null,null,null);
+                return UserEvent.createEvent(null, null, null);
             }
         }
-    }
-    public JSONEventSerializer() {
-        this.gson = new GsonBuilder().registerTypeAdapter(Ship.class, new ShipSerializer())
-                .registerTypeAdapter(UserEvent.class, new UserEventDeserializer())
-                .create();
-
-    }
-    public String serialize(ModelEvent modelEvent) {
-        return gson.toJson(modelEvent);
-    }
-    public String serialize(UserEvent modelEvent) {
-        return gson.toJson(modelEvent);
-    }
-    public UserEvent deserialize(String finalMessage) {
-        return gson.fromJson(finalMessage, UserEvent.class);
     }
 }

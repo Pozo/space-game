@@ -11,6 +11,7 @@ public class TimeUnits implements Units {
     public TimeUnits(float value) {
         this.value = value;
     }
+
     public double getValue() {
         return value;
     }

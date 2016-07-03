@@ -52,10 +52,12 @@ public class PlanetBuilder {
         this.id = id;
         return this;
     }
+
     public PlanetBuilder setOwner(Owner owner) {
         this.owner = owner;
         return this;
     }
+
     public Planet createPlanet() {
         return new Planet(owner, diameter, mass, defaultAstronomicalObjects, orbitalPeriod, rotationPeriod, coordinate, id);
     }

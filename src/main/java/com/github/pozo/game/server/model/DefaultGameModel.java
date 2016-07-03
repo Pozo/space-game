@@ -1,11 +1,10 @@
-package com.github.pozo.game.server;
+package com.github.pozo.game.server.model;
 
-import com.github.pozo.game.server.model.ModelEventConsumer;
-import com.github.pozo.game.server.model.objects.meta.Player;
-import com.github.pozo.game.server.model.objects.meta.PlayerId;
 import com.github.pozo.game.server.model.objects.artificial.ship.Ship;
 import com.github.pozo.game.server.model.objects.artificial.ship.ShipBuilder;
 import com.github.pozo.game.server.model.objects.artificial.ship.modelevent.ShipModelEventProducer;
+import com.github.pozo.game.server.model.objects.meta.Player;
+import com.github.pozo.game.server.model.objects.meta.PlayerId;
 import com.github.pozo.game.server.model.objects.natural.DefaultAstronomicalObject;
 import com.github.pozo.game.server.model.objects.natural.Planet;
 import com.github.pozo.game.server.model.objects.natural.PlanetBuilder;
@@ -20,24 +19,19 @@ import com.github.pozo.game.server.model.unit.Route;
 import com.github.pozo.game.server.model.unit.time.TimeUnits;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
- * Created by pozo on 2016.06.06..
+ * Created by pozo on 2016.07.02..
  */
-public class GameModel {
-    private List<ModelEventConsumer> modelEventConsumers = new ArrayList<ModelEventConsumer>();
-    private Map<PlayerId, Player> players = new HashMap<PlayerId,Player>();
+public class DefaultGameModel extends GameModel {
+    public DefaultGameModel() {
 
-    GameModel() {
         Player NPC = Player.getNPC();
         Player player = new Player(new PlayerId("Jozsi"));
         Player player2 = new Player(new PlayerId("Bela"));
 
-        players.put(NPC.getPlayerId(), NPC);
-        players.put(player.getPlayerId(), player);
+        addPlayer(NPC);
+        addPlayer(player);
 
         Coordinate gridOrigo = new Coordinate(0, 0);
         Coordinate coordinateMercury = new Coordinate(3, 1);
@@ -48,7 +42,7 @@ public class GameModel {
                 .setMass(new MassUnit(2))
                 .setId("Sun")
                 .createStar();
-        modelEventConsumers.add(star);
+        addAstronomicalObject(star);
 
         Planet mercury = new PlanetBuilder().setDefaultAstronomicalObjects(new ArrayList<DefaultAstronomicalObject>())
                 .setCoordinate(coordinateMercury)
@@ -59,7 +53,7 @@ public class GameModel {
                 .setRotationPeriod(new TimeUnits(1))
                 .setOwner(NPC)
                 .createPlanet();
-        modelEventConsumers.add(mercury);
+        addAstronomicalObject(mercury);
 
         Planet venus = new PlanetBuilder().setDefaultAstronomicalObjects(new ArrayList<DefaultAstronomicalObject>())
                 .setCoordinate(coordinateVenus)
@@ -70,13 +64,15 @@ public class GameModel {
                 .setRotationPeriod(new TimeUnits(1))
                 .setOwner(player)
                 .createPlanet();
-        modelEventConsumers.add(venus);
+
+        addAstronomicalObject(venus);
 
         StarSystem startSystem = new StarSystemBuilder().setStar(star)
                 .withAstronomicalObject(new DistanceUnit(10), mercury)
                 .withAstronomicalObject(new DistanceUnit(12), venus)
                 .createStarSystem();
-        modelEventConsumers.add(startSystem);
+
+        addAstronomicalObject(startSystem);
 
         Coordinate planetXCoordinate = new Coordinate(3, 1);
         Star star2 = new StarBuilder().setCoordinate(gridOrigo)
@@ -84,7 +80,8 @@ public class GameModel {
                 .setMass(new MassUnit(3))
                 .setId("Sun")
                 .createStar();
-        modelEventConsumers.add(star2);
+
+        addAstronomicalObject(star2);
 
         Planet planetX = new PlanetBuilder().setDefaultAstronomicalObjects(new ArrayList<DefaultAstronomicalObject>())
                 .setCoordinate(planetXCoordinate)
@@ -94,12 +91,12 @@ public class GameModel {
                 .setOrbitalPeriod(new TimeUnits(1))
                 .setRotationPeriod(new TimeUnits(1))
                 .createPlanet();
-        modelEventConsumers.add(planetX);
+        addAstronomicalObject(planetX);
 
         StarSystem startSystem2 = new StarSystemBuilder().setStar(star2)
                 .withAstronomicalObject(new DistanceUnit(100000), planetX)
                 .createStarSystem();
-        modelEventConsumers.add(startSystem2);
+        addAstronomicalObject(startSystem2);
 
         ShipModelEventProducer shipEventProducer = new ShipModelEventProducer();
         final Ship ship = new ShipBuilder().setCoordinate(new Coordinate(0, 0))
@@ -114,16 +111,8 @@ public class GameModel {
                 .setId("HortyTwo")
                 .setOwner(player2)
                 .createShip();
-        modelEventConsumers.add(ship);
-
-        player.addArtificialObject(ship);
         shipEventProducer.addConsumer(player);
-    }
-    public List<ModelEventConsumer> getModelEventConsumers() {
-        return modelEventConsumers;
+        addArtificialObject(player, ship);
     }
 
-    public Player getPlayer(PlayerId playerId) {
-        return players.get(playerId);
-    }
 }

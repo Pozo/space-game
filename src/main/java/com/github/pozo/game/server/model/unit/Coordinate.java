@@ -11,23 +11,26 @@ public class Coordinate {
         this.x = x;
         this.y = y;
     }
+
     public double getDistance(Coordinate coordinate) {
         double dx = this.x - coordinate.x;
         double dy = this.y - coordinate.y;
 
         return Math.sqrt(dx * dx + dy * dy);
     }
+
     public double getAngleY(Coordinate coordinate) {
         double angle = Math.atan2(coordinate.y - y, coordinate.x - x);
 
-        if(angle < 0){
+        if (angle < 0) {
 
-            angle += 2*Math.PI;
+            angle += 2 * Math.PI;
         }
 
         return angle;
 
     }
+
     public Coordinate normalize() {
         double newX = 0;
         double newY = 0;
@@ -38,6 +41,7 @@ public class Coordinate {
         }
         return new Coordinate(newX, newY);
     }
+
     public Coordinate sub(Coordinate v1) {
         return new Coordinate(this.x - v1.x, this.y - v1.y);
     }
@@ -45,9 +49,11 @@ public class Coordinate {
     public Coordinate add(Coordinate v1) {
         return new Coordinate(this.x + v1.x, this.y + v1.y);
     }
+
     public Coordinate multiply(double i) {
         return new Coordinate(this.x * i, this.y * i);
     }
+
     public double getX() {
         return x;
     }
@@ -63,6 +69,7 @@ public class Coordinate {
     public void setY(double y) {
         this.y = y;
     }
+
     public String toJSON() {
         return "{" +
                 "\"x\":" + x +

@@ -8,5 +8,6 @@ import com.github.pozo.game.server.model.unit.MassUnit;
  */
 public interface Material extends Spatial {
     DistanceUnit getDiameter();
+
     MassUnit getMass();
 }

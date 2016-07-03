@@ -1,4 +1,4 @@
-package com.github.pozo.game.server.control;
+package com.github.pozo.game.server.control.event.user;
 
 /**
  * Created by pozo on 2016.06.13..
@@ -13,19 +13,21 @@ public class UserEvent<T extends UserEventType, S, D> {
         this.eventSubject = eventSubject;
         this.eventData = eventData;
     }
-    public T getType(){
+
+    public static <T extends UserEventType, S, D> UserEvent createEvent(T eventTypes, S ship, D newCoordinate) {
+        return new UserEvent<T, S, D>(eventTypes, ship, newCoordinate);
+    }
+
+    public T getType() {
         return eventType;
     }
-    public D getData(){
+
+    public D getData() {
         return eventData;
     }
 
     public S getEventSubject() {
         return eventSubject;
-    }
-
-    public static <T extends UserEventType,S,D> UserEvent createEvent(T eventTypes, S ship,D newCoordinate) {
-        return new UserEvent<T,S,D>(eventTypes, ship, newCoordinate);
     }
 
     @Override

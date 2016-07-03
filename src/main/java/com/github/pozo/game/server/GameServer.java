@@ -3,7 +3,8 @@ package com.github.pozo.game.server;
 import com.github.pozo.ModelEventEncoder;
 import com.github.pozo.UserEventDecoder;
 import com.github.pozo.game.server.control.GameController;
-import com.github.pozo.game.server.control.UserEvent;
+import com.github.pozo.game.server.control.event.user.UserEvent;
+import com.github.pozo.game.server.model.GameModel;
 import com.github.pozo.game.server.model.ModelEvent;
 import com.github.pozo.game.server.model.ModelEventConsumer;
 import com.github.pozo.game.server.model.objects.meta.Player;
@@ -59,7 +60,7 @@ public class GameServer implements ModelEventConsumer<ModelEvent> {
 
         gameController = new GameController(this.player, gameModel);
         /*
-        PlayerSettings playerSettings = new PlayerSettings();
+        PlayerProperties playerSettings = new PlayerProperties();
         playerSettings.setScreenHeight(10);
         playerSettings.setScreenHeight(100);
         */
@@ -83,7 +84,7 @@ public class GameServer implements ModelEventConsumer<ModelEvent> {
 
     public void consume(ModelEvent modelEvent) {
 
-        if(asyncRemote != null) {
+        if (asyncRemote != null) {
             asyncRemote.sendObject(modelEvent);
         }
     }

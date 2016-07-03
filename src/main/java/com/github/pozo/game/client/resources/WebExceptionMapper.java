@@ -27,8 +27,10 @@ public class WebExceptionMapper implements ExceptionMapper<WebApplicationExcepti
         // Create a JSON response with the provided hashmap
         return Response.status(status)
                 .type(MediaType.APPLICATION_JSON_TYPE)
-                .entity(new HashMap<String, String>() { {
-                    put("error", msg);
-                } }).build();
+                .entity(new HashMap<String, String>() {
+                    {
+                        put("error", msg);
+                    }
+                }).build();
     }
 }

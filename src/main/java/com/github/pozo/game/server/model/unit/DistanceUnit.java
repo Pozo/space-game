@@ -9,6 +9,7 @@ public class DistanceUnit implements Units {
     public DistanceUnit(float value) {
         this.value = value;
     }
+
     public double getValue() {
         return value;
     }

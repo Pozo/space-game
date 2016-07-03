@@ -20,6 +20,7 @@ public class Galaxy extends DefaultAstronomicalObject {
         this.centralDefaultAstronomicalObjects = centralDefaultAstronomicalObjects;
         this.defaultAstronomicalObjects = defaultAstronomicalObjects;
     }
+
     public DefaultAstronomicalObject getCentralAstronomicalObject() {
         return centralDefaultAstronomicalObjects;
     }

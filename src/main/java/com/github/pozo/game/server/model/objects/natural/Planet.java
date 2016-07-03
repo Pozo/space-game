@@ -6,8 +6,8 @@ import com.github.pozo.game.server.model.objects.meta.Player;
 import com.github.pozo.game.server.model.unit.Coordinate;
 import com.github.pozo.game.server.model.unit.DistanceUnit;
 import com.github.pozo.game.server.model.unit.MassUnit;
-import com.github.pozo.game.server.model.unit.time.modelevents.TimeModelEvent;
 import com.github.pozo.game.server.model.unit.time.TimeUnits;
+import com.github.pozo.game.server.model.unit.time.modelevents.TimeModelEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,7 +23,7 @@ public class Planet extends DefaultAstronomicalObject implements Ownable {
     private TimeUnits rotationPeriod;
 
     Planet(Owner owner, DistanceUnit diameter, MassUnit mass, ArrayList<DefaultAstronomicalObject> defaultAstronomicalObjects, TimeUnits orbitalPeriod, TimeUnits rotationPeriod, Coordinate coordinate, String id) {
-        this(diameter,mass,coordinate,id);
+        this(diameter, mass, coordinate, id);
 
         this.owner = owner;
         this.defaultAstronomicalObjects = defaultAstronomicalObjects;
@@ -65,15 +65,15 @@ public class Planet extends DefaultAstronomicalObject implements Ownable {
         return owner != null;
     }
 
-    public void setOwner(Owner owner) {
-        this.owner = owner;
-    }
-
     public void removeOwner() {
         setOwner(Player.getNPC());
     }
 
     public Owner getOwner() {
         return owner;
+    }
+
+    public void setOwner(Owner owner) {
+        this.owner = owner;
     }
 }

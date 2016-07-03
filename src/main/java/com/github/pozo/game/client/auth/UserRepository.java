@@ -8,15 +8,15 @@ import java.util.List;
 /**
  * Created by pozo on 2016.06.19..
  */
-public class UserRepository implements Repository<User,String> {
+public class UserRepository implements Repository<User, String> {
 
     public User find(RepositoryKey<String> repositoryKey) {
         String userName = repositoryKey.getKey();
 
-        if(userName.equals("Jozsi")) {
-            return new User("Jozsi","");
-        } else if(userName.equals("Bela")) {
-            return new User("Bela","");
+        if (userName.equals("Jozsi")) {
+            return new User("Jozsi", "");
+        } else if (userName.equals("Bela")) {
+            return new User("Bela", "");
         } else {
             throw new IllegalArgumentException("Invalid user");
         }

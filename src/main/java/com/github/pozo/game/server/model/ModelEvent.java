@@ -1,6 +1,6 @@
 package com.github.pozo.game.server.model;
 
-public abstract class ModelEvent<T extends ModelEventType,D> {
+public abstract class ModelEvent<T extends ModelEventType, D> {
     private final T eventType;
     private final D eventData;
 
@@ -8,10 +8,12 @@ public abstract class ModelEvent<T extends ModelEventType,D> {
         this.eventType = eventType;
         this.eventData = eventData;
     }
-    public T getType(){
+
+    public T getType() {
         return eventType;
     }
-    public D getData(){
+
+    public D getData() {
         return eventData;
     }
 

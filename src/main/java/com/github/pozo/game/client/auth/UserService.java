@@ -17,6 +17,7 @@ public class UserService {
         User user = userRepository.find(repositoryKey);
         return user;
     }
+
     public boolean logout(User user) {
         return true;
     }

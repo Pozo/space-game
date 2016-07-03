@@ -1,4 +1,6 @@
-var enabled = false;
+function SectionController() {
+
+}
 var Sections = {
     UNDEFINED: -1,
 
@@ -15,112 +17,114 @@ var Sections = {
 
     CENTER: 9,
 };
+SectionController.prototype.enabled = false;
+SectionController.prototype.controlEdgeWidth = 100;
+SectionController.prototype.controlEdgeStepSize = 10;
 
-var controlEdgeWidth = 100;
-var controlEdgeStepSize = 10;
+SectionController.prototype.currentSection = Sections.UNDEFINED;
+SectionController.prototype.previousSection = Sections.UNDEFINED;
 
-var currentSection = Sections.UNDEFINED;
-var previousSection = Sections.UNDEFINED;
+SectionController.prototype.intervalID;
+SectionController.prototype.interval = 30;
 
-var intervalID;
+SectionController.prototype.resetSections = function() {
+    if (this.enabled) {
+        this.currentSection = Sections.UNDEFINED;
+        this.previousSection = Sections.UNDEFINED;
 
-var resetSections = function(event) {
-    if (enabled) {
-        currentSection = Sections.UNDEFINED;
-        previousSection = Sections.UNDEFINED;
-
-        clearInterval(intervalID);
+        clearInterval(this.intervalID);
     }
-
 }
-var sectionController = function(event) {
-    if (enabled) {
+SectionController.prototype.sectionController = function(event) {
+    if (this.enabled) {
         var x = event.pageX,
             y = event.pageY;
         var mousePosition = new ClientCoordinate(x, y);
 
-        setCurrentSection(mousePosition);
+        this.setCurrentSection(mousePosition);
 
-        if (currentSection == Sections.CENTER) {
-            clearInterval(intervalID);
+        if (this.currentSection == Sections.CENTER) {
+            clearInterval(this.intervalID);
         }
 
-        if (previousSection != currentSection) {
-            previousSection = currentSection;
+        if (this.previousSection != this.currentSection) {
+            this.previousSection = this.currentSection;
 
-            if (currentSection != Sections.CENTER) {
-                clearInterval(intervalID);
-                intervalID = setInterval(function() {
-                    var offsetY = controlEdgeStepSize * scale;
-                    var offsetX = controlEdgeStepSize * scale;
+            if (this.currentSection != Sections.CENTER) {
+                clearInterval(this.intervalID);
+                this.intervalID = setInterval(function() {
+                    var screenCorner = playerProperties.getScreenCorner();
+                    var currentX = screenCorner.getX();
+                    var currentY = screenCorner.getY();
 
-                    if (currentSection == Sections.TOP) {
-                        corner.y -= offsetY;
-                    } else if (currentSection == Sections.TOP_LEFT) {
-                        corner.x -= offsetX;
-                        corner.y -= offsetY;
-                    } else if (currentSection == Sections.TOP_RIGHT) {
-                        corner.x += offsetX;
-                        corner.y -= offsetY;
-                    } else if (currentSection == Sections.LEFT) {
-                        corner.x -= offsetX;
-                    } else if (currentSection == Sections.RIGHT) {
-                        corner.x += offsetX;
-                    } else if (currentSection == Sections.BOTTOM) {
-                        corner.y += offsetY;
-                    } else if (currentSection == Sections.BOTTOM_LEFT) {
-                        corner.x -= offsetX;
-                        corner.y += offsetY;
-                    } else if (currentSection == Sections.BOTTOM_RIGHT) {
-                        corner.x += offsetX;
-                        corner.y += offsetY;
+                    var offsetY = this.controlEdgeStepSize * scale;
+                    var offsetX = this.controlEdgeStepSize * scale;
+
+                    if (this.currentSection == Sections.TOP) {
+                        playerProperties.setScreenCornerY(currentY - offsetY);
+                    } else if (this.currentSection == Sections.TOP_LEFT) {
+                        playerProperties.setScreenCornerX(currentX - offsetX);
+                        playerProperties.setScreenCornerY(currentY - offsetY);
+                    } else if (this.currentSection == Sections.TOP_RIGHT) {
+                        playerProperties.setScreenCornerX(currentX + offsetX);
+                        playerProperties.setScreenCornerY(currentY - offsetY);
+                    } else if (this.currentSection == Sections.LEFT) {
+                        playerProperties.setScreenCornerX(currentX - offsetX);
+                    } else if (this.currentSection == Sections.RIGHT) {
+                        playerProperties.setScreenCornerX(currentX + offsetX);
+                    } else if (this.currentSection == Sections.BOTTOM) {
+                        playerProperties.setScreenCornerY(currentY + offsetY);
+                    } else if (this.currentSection == Sections.BOTTOM_LEFT) {
+                        playerProperties.setScreenCornerX(currentX - offsetX);
+                        playerProperties.setScreenCornerY(currentY + offsetY);
+                    } else if (this.currentSection == Sections.BOTTOM_RIGHT) {
+                        playerProperties.setScreenCornerX(currentX + offsetX);
+                        playerProperties.setScreenCornerY(currentY + offsetY);
                     }
 
-                    drawScene();
-                }, 20);
+                    drawer.drawScene();
+                }, this.interval);
             }
         }
     }
 }
-
-function setCurrentSection(mousePosition) {
-    if (onTop(mousePosition)) {
-        if (onLeft(mousePosition)) {
-            currentSection = Sections.TOP_LEFT;
-        } else if (onRight(mousePosition)) {
-            currentSection = Sections.TOP_RIGHT;
+SectionController.prototype.setCurrentSection = function(mousePosition) {
+    if (this.onTop(mousePosition)) {
+        if (this.onLeft(mousePosition)) {
+            this.currentSection = Sections.TOP_LEFT;
+        } else if (this.onRight(mousePosition)) {
+            this.currentSection = Sections.TOP_RIGHT;
         } else {
-            currentSection = Sections.TOP;
+            this.currentSection = Sections.TOP;
         }
-    } else if (onBottom(mousePosition)) {
-        if (onLeft(mousePosition)) {
-            currentSection = Sections.BOTTOM_LEFT;
-        } else if (onRight(mousePosition)) {
-            currentSection = Sections.BOTTOM_RIGHT;
+    } else if (this.onBottom(mousePosition)) {
+        if (this.onLeft(mousePosition)) {
+            this.currentSection = Sections.BOTTOM_LEFT;
+        } else if (this.onRight(mousePosition)) {
+            this.currentSection = Sections.BOTTOM_RIGHT;
         } else {
-            currentSection = Sections.BOTTOM;
+            this.currentSection = Sections.BOTTOM;
         }
-    } else if (onLeft(mousePosition)) {
-        currentSection = Sections.LEFT;
-    } else if (onRight(mousePosition)) {
-        currentSection = Sections.RIGHT;
+    } else if (this.onLeft(mousePosition)) {
+        this.currentSection = Sections.LEFT;
+    } else if (this.onRight(mousePosition)) {
+        this.currentSection = Sections.RIGHT;
     } else {
-        currentSection = Sections.CENTER;
+        this.currentSection = Sections.CENTER;
     }
 }
-
-function onLeft(coordinate) {
-    return coordinate.x <= controlEdgeWidth;
+SectionController.prototype.onLeft = function(coordinate) {
+    return coordinate.x <= this.controlEdgeWidth;
 }
 
-function onRight(coordinate) {
-    return coordinate.x >= width - controlEdgeWidth;
+SectionController.prototype.onRight = function(coordinate) {
+    return coordinate.x >= playerProperties.getScreenWidth() - this.controlEdgeWidth;
 }
 
-function onTop(coordinate) {
-    return coordinate.y <= controlEdgeWidth;
+SectionController.prototype.onTop = function(coordinate) {
+    return coordinate.y <= this.controlEdgeWidth;
 }
 
-function onBottom(coordinate) {
-    return coordinate.y >= height - controlEdgeWidth;
+SectionController.prototype.onBottom = function(coordinate) {
+    return coordinate.y >= playerProperties.getScreenHeight() - this.controlEdgeWidth;
 }

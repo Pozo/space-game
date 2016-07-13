@@ -3,7 +3,7 @@ function ClientCoordinate(x, y) {
     this.y = Math.round(y);
 }
 ClientCoordinate.prototype.asModelCoordinate = function() {
-    return new ClientCoordinate(this.x, -this.y);
+    return new ModelCoordinate(this.x, -this.y);
 }
 ClientCoordinate.prototype.getX = function() {
     return this.x;

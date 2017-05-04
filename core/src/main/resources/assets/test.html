@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html>
+<script src="ship.js"></script>
+<script src="shipView.js"></script>
+<script src="modelCoordinate.js"></script>
+<script src="clientCoordinate.js"></script>
+<script src="playerProperties.js"></script>
+
+<body style="padding:0;margin:0;overflow:hidden;">
+
+    <canvas id="canvas" style="background-size: 100% 100%;" /> Your browser does not support the canvas element.</canvas>
+    <script>
+        var userName = 'Bela';
+        var initialPosition = new ClientCoordinate(0, 0);
+        var initialWidth = canvas.width = window.innerWidth;
+        var initialHeight = canvas.height = window.innerHeight;
+
+        var playerProperties = new PlayerProperties(initialPosition, initialWidth, initialHeight);
+        playerProperties.setUserName(userName);
+
+        var viewModel = {
+            'local': {
+                'astronomical': {},
+                'artificial': {}
+            },
+            'remote': {
+                'astronomical': {},
+                'artificial': {}
+            }
+        };
+
+        var model = {
+            'local': {
+                'astronomical': {},
+                'artificial': {}
+            },
+            'remote': {
+                'astronomical': {},
+                'artificial': {}
+            }
+        };
+        var previousModel = {
+            'remote': {
+                'artificial': {}
+            }
+        };
+        var defaultHandler = {
+            get: function(target, name) {
+                console.log(target, name);
+                return target[name];
+            },
+            set: function(target, name, value) {
+                console.log(target, name);
+                target[name] = value;
+            }
+        };
+        // sync client data with server data
+        var handlerWithSynchronizer = {
+            get: function(target, name) {
+                console.log(target, name);
+                return target[name];
+            },
+            set: function(target, name, value) {
+                console.log(target, name);
+                target[name] = value;
+            }
+        };
+        var interpolationTasks = [];
+        // interpolate other gamers data with server data
+        var handlerWithInterpolating = {
+            get: function(target, name) {
+                return target[name];
+            },
+            // setup an interpolator
+            set: function(target, name, value) {
+                var previousShip = previousModel['remote']['artificial'][name];
+                var previousShipView = viewModel['remote']['artificial'][name];
+                var shipView;
+
+                var ship = new Ship(value.id, value.coord);
+                ship.setDestinations(value.route);
+
+                if (!viewModel['remote']['artificial'][name]) {
+                    shipView = new ShipView(ship);
+                    viewModel['remote']['artificial'][name] = shipView;
+                }
+                target[name] = ship;
+
+                this.advance(ship, previousShip, shipView, previousShipView);
+            },
+            advance: function(ship, previousShip, shipView, previousShipView) {
+                if (previousShip && previousShipView) {
+                    // interpolate loop
+                    var halfOfClientRefreshMs = clientRefreshMs / 2;
+
+                    var interpolate = this.interpolate;
+                    var interpolationLoop = setInterval(function() {
+                        var finalTime = modelLoopInterval;
+                        var percentage = currentTime / finalTime;
+
+                        var initialX = previousShip.getCoordinate().getX();
+                        var initialY = previousShip.getCoordinate().getY();
+
+                        var finalX = ship.getCoordinate().getX();
+                        var finalY = ship.getCoordinate().getY();
+
+                        var interpolatedX = interpolate(initialX, finalX, percentage);
+                        var interpolatedY = interpolate(initialY, finalY, percentage);
+
+                        previousShipView.setCoordinate(new ClientCoordinate(interpolatedX, interpolatedY));
+                    }, halfOfClientRefreshMs);
+
+                    interpolationTasks.push(interpolationLoop);
+                } else {
+                    previousShipView = shipView;
+                }
+            },
+            clearInterpolationTasks: function() {
+                if (interpolationTasks) {
+                    for (var j = 0; j < interpolationTasks.length; j++) {
+                        clearInterval(interpolationTasks[j]);
+                    }
+                }
+                interpolationTasks = [];
+            },
+            interpolate: function(initialNumber, finalNumber, progress) {
+                return initialNumber + (finalNumber - initialNumber) * progress;
+            }
+        };
+        var modelProxyLocalAstronomical = new Proxy(model['local']['astronomical'], defaultHandler);
+        var modelProxyLocalArtificial = new Proxy(model['local']['artificial'], handlerWithSynchronizer);
+
+        var modelProxyRemoteAstronomical = new Proxy(model['remote']['astronomical'], defaultHandler);
+        var modelProxyRemoteArtificial = new Proxy(model['remote']['artificial'], handlerWithInterpolating);
+
+        function updateModel(remoteModel) {
+            var remoteModelArtificialObjects = remoteModel['remote']['artificial'];
+            var modelArtificialObjects = model['remote']['artificial'];
+            var previousModelArtificialObjects = previousModel['remote']['artificial'];
+
+            handlerWithInterpolating.clearInterpolationTasks();
+
+            for (var variable in remoteModelArtificialObjects) {
+                if (remoteModelArtificialObjects.hasOwnProperty(variable)) {
+                    if (modelProxyRemoteArtificial.hasOwnProperty(variable)) {
+                        previousModelArtificialObjects[variable] = modelProxyRemoteArtificial[variable];
+                        modelProxyRemoteArtificial[variable] = remoteModelArtificialObjects[variable];
+                        console.log("update");
+                    } else {
+                        previousModelArtificialObjects[variable] = modelProxyRemoteArtificial[variable];
+                        modelProxyRemoteArtificial[variable] = remoteModelArtificialObjects[variable];
+                        console.log("set");
+                    }
+                }
+            }
+        }
+
+        var currentTime = 0;
+        var clientRefreshMs = 100;
+        // client loop
+        var clientLoop = setInterval(function() {
+            //console.log('client loop');
+            var titanic = viewModel['remote']['artificial']['remoteShipID1'];
+            currentTime += clientRefreshMs;
+
+            console.log(titanic.getCoordinate());
+        }, clientRefreshMs);
+
+        // model loop
+        var modelLoopInterval = 1000;
+        var k = 0;
+
+        var modelLoop = setInterval(function() {
+            remoteModel['local']['artificial']['shipID1'].coord.x += 40;
+            remoteModel['local']['artificial']['shipID1'].coord.y += 40;
+
+            remoteModel['remote']['artificial']['remoteShipID1'].coord.x += 20;
+            remoteModel['remote']['artificial']['remoteShipID1'].coord.y += 20;
+
+
+            remoteModel['remote']['artificial']['remoteShipID5'] = {
+                name: 'asd',
+                coord: {
+                    x: 1,
+                    y: 3
+                }
+            };
+            //remoteModel['remote']['artificial']['remoteShipID5'].coord.y += 20;
+
+            updateModel(remoteModel);
+
+            currentTime = 0;
+            if (k++ > 2) {
+                console.log("cancel")
+
+                clearInterval(modelLoop);
+                clearInterval(clientLoop);
+
+                if (interpolationTasks) {
+                    for (var i = 0; i < interpolationTasks.length; i++) {
+                        clearInterval(interpolationTasks[i]);
+                    }
+                }
+            }
+        }, modelLoopInterval);
+
+        var remoteModel = {
+            'local': {
+                'artificial': {
+                    'shipID1': {
+                        name: 'Mephisto',
+                        coord: {
+                            x: 0,
+                            y: 0
+                        },
+                        route: []
+                    },
+                    'shipID2': {
+                        name: 'Gallia',
+                        coord: {
+                            x: 10,
+                            y: -10
+                        },
+                        route: []
+                    },
+                    'shipID3': {
+                        name: 'Horthy',
+                        coord: {
+                            x: 20,
+                            y: -20
+                        },
+                        route: []
+                    },
+                },
+                'astronomical': {
+                    'planet1': {
+                        name: 'Earth',
+                        coord: {
+                            x: 25,
+                            y: -25
+                        }
+                    },
+                    'planet2': {
+                        name: 'Venus',
+                        coord: {
+                            x: 21,
+                            y: -21
+                        }
+                    }
+                },
+            },
+            'remote': {
+                'artificial': {
+                    'remoteShipID1': {
+                        name: 'Titanic',
+                        coord: {
+                            x: 50,
+                            y: -50
+                        },
+                        route: []
+                    },
+                    'remoteShipID2': {
+                        name: 'Gigantic',
+                        coord: {
+                            x: 60,
+                            y: -60
+                        },
+                        route: []
+                    },
+                }
+            }
+        };
+    </script>
+</body>

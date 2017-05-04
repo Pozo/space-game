@@ -3,6 +3,8 @@
 
 An experimental space game written in Java and ~~pure javascript~~ (Kotlin!) using canvas element.
 
+Currenly I'm porting javascript part so It's not working right now  ¯\_(ツ)_/¯
+
 In the future I plan to use some kind of Rx library with websocket.
 
 ![space-game](https://github.com/Pozo/space-game/blob/master/demo.gif "space-game")

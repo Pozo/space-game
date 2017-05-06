@@ -17,7 +17,7 @@ fun main(args: Array<String>) {
 }
 
 private fun draw() {
-    val playerProperties = PlayerProperties(Coordinate(0, 0), window.innerWidth, window.innerHeight)
+    val playerProperties = Screen(Coordinate(0, 0), window.innerWidth, window.innerHeight)
     val canvas = Canvas(playerProperties)
 
     canvas.connectAndDraw()

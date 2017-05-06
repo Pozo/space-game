@@ -19,7 +19,7 @@ enum class Sections {
     CENTER
 }
 
-class SectionController(val playerProperties: PlayerProperties, val canvas: Canvas) {
+class SectionController(val screen: Screen, val canvas: Canvas) {
     var enabled = false
     var controlEdgeWidth = 100
     var controlEdgeStepSize = 10
@@ -57,33 +57,33 @@ class SectionController(val playerProperties: PlayerProperties, val canvas: Canv
                 if (currentSection != Sections.CENTER) {
                     window.clearInterval(intervalID)
                     intervalID = window.setInterval({
-                        val screenCorner = playerProperties.screenCorner
+                        val screenCorner = screen.screenCorner
                         val currentX = screenCorner.x
                         val currentY = screenCorner.y
 
-                        val offsetY = controlEdgeStepSize * canvas.scale
-                        val offsetX = controlEdgeStepSize * canvas.scale
+                        val offsetY = controlEdgeStepSize * screen.scale
+                        val offsetX = controlEdgeStepSize * screen.scale
 
                         if (currentSection == Sections.TOP) {
-                            playerProperties.setScreenCornerY((currentY - offsetY).toInt())
+                            screen.setScreenCornerY((currentY - offsetY).toInt())
                         } else if (currentSection == Sections.TOP_LEFT) {
-                            playerProperties.setScreenCornerX((currentX - offsetX).toInt())
-                            playerProperties.setScreenCornerY((currentY - offsetY).toInt())
+                            screen.setScreenCornerX((currentX - offsetX).toInt())
+                            screen.setScreenCornerY((currentY - offsetY).toInt())
                         } else if (currentSection == Sections.TOP_RIGHT) {
-                            playerProperties.setScreenCornerX((currentX + offsetX).toInt())
-                            playerProperties.setScreenCornerY((currentY - offsetY).toInt())
+                            screen.setScreenCornerX((currentX + offsetX).toInt())
+                            screen.setScreenCornerY((currentY - offsetY).toInt())
                         } else if (currentSection == Sections.LEFT) {
-                            playerProperties.setScreenCornerX((currentX - offsetX).toInt())
+                            screen.setScreenCornerX((currentX - offsetX).toInt())
                         } else if (currentSection == Sections.RIGHT) {
-                            playerProperties.setScreenCornerX((currentX + offsetX).toInt())
+                            screen.setScreenCornerX((currentX + offsetX).toInt())
                         } else if (currentSection == Sections.BOTTOM) {
-                            playerProperties.setScreenCornerY((currentY + offsetY).toInt())
+                            screen.setScreenCornerY((currentY + offsetY).toInt())
                         } else if (currentSection == Sections.BOTTOM_LEFT) {
-                            playerProperties.setScreenCornerX((currentX - offsetX).toInt())
-                            playerProperties.setScreenCornerY((currentY + offsetY).toInt())
+                            screen.setScreenCornerX((currentX - offsetX).toInt())
+                            screen.setScreenCornerY((currentY + offsetY).toInt())
                         } else if (currentSection == Sections.BOTTOM_RIGHT) {
-                            playerProperties.setScreenCornerX((currentX + offsetX).toInt())
-                            playerProperties.setScreenCornerY((currentY + offsetY).toInt())
+                            screen.setScreenCornerX((currentX + offsetX).toInt())
+                            screen.setScreenCornerY((currentY + offsetY).toInt())
                         }
                         canvas.drawScene()
                     }, interval)
@@ -123,7 +123,7 @@ class SectionController(val playerProperties: PlayerProperties, val canvas: Canv
     }
 
     fun onRight(coordinate: Coordinate): Boolean {
-        return coordinate.x >= playerProperties.screenWidth - controlEdgeWidth
+        return coordinate.x >= screen.screenWidth - controlEdgeWidth
     }
 
     fun onTop(coordinate: Coordinate): Boolean {
@@ -131,7 +131,7 @@ class SectionController(val playerProperties: PlayerProperties, val canvas: Canv
     }
 
     fun onBottom(coordinate: Coordinate): Boolean {
-        return coordinate.y >= playerProperties.screenHeight - controlEdgeWidth
+        return coordinate.y >= screen.screenHeight - controlEdgeWidth
     }
 }
 

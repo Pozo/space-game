@@ -11,15 +11,14 @@ import kotlin.browser.window
 import kotlin.js.Math.abs
 
 
-class Canvas(val playerProperties: PlayerProperties) {
+class Canvas(val screen: Screen) {
     val canvas: HTMLCanvasElement = kotlin.browser.document.getElementById("canvas") as HTMLCanvasElement
     val context: CanvasRenderingContext2D = canvas.getContext("2d")!! as CanvasRenderingContext2D
-    val sectionController = SectionController(playerProperties, this)
+    val sectionController = SectionController(screen, this)
+    val boardPainter: BoardPainter = BoardPainter(screen)
 
     private var drag: Boolean = false
     private var line: Int = 0
-    private var gridSize = 42
-    var scale = 1.0
 
     var mouseDownCoordinate = Coordinate(0, 0)
     var mouseDownCoordinateWithCornerOffset = Coordinate(0, 0)
@@ -46,8 +45,8 @@ class Canvas(val playerProperties: PlayerProperties) {
             val mousePosition = Coordinate(evt.pageX.toInt(), evt.pageY.toInt());
 
             if (drag) {
-                playerProperties.setScreenCornerX(mouseDownCoordinateWithCornerOffset.x - mousePosition.x);
-                playerProperties.setScreenCornerY(mouseDownCoordinateWithCornerOffset.y - mousePosition.y);
+                screen.setScreenCornerX(mouseDownCoordinateWithCornerOffset.x - mousePosition.x);
+                screen.setScreenCornerY(mouseDownCoordinateWithCornerOffset.y - mousePosition.y);
 
                 drawScene()
             }
@@ -57,21 +56,6 @@ class Canvas(val playerProperties: PlayerProperties) {
             drag = false
             sectionController.resetSections()
         }
-        /*
-             if (event.buttons == 1) {
-                var x = event.pageX,
-                    y = event.pageY;
-                var mousePosition = new ClientCoordinate(x, y);
-                var clientCornerCoordinate = playerProperties.getScreenCorner();
-                mouseDownCoordinate.x = mousePosition.x;
-                mouseDownCoordinate.y = mousePosition.y;
-
-                mouseDownCoordinateWithCornerOffset.x = mouseDownCoordinate.x + clientCornerCoordinate.getX();
-                mouseDownCoordinateWithCornerOffset.y = mouseDownCoordinate.y + clientCornerCoordinate.getY();
-
-                drag = true;
-            }
-        * */
         canvas.onmousedown = { evt: Event ->
             evt as MouseEvent
 
@@ -80,7 +64,7 @@ class Canvas(val playerProperties: PlayerProperties) {
                 val y = evt.pageY
 
                 val mousePosition = Coordinate(x.toInt(), y.toInt());
-                val clientCornerCoordinate = playerProperties.screenCorner
+                val clientCornerCoordinate = screen.screenCorner
                 mouseDownCoordinate.x = mousePosition.x;
                 mouseDownCoordinate.y = mousePosition.y;
 
@@ -126,20 +110,15 @@ class Canvas(val playerProperties: PlayerProperties) {
         canvas.onwheel = { evt ->
             evt as WheelEvent
 
-            if (evt.deltaY < 0) {
-                if (scale > 1) {
-                    scale -= 0.5
-                }
-            } else {
-                scale += 0.5
-            }
+            screen.setScale(evt.deltaY)
+
             drawScene()
         }
     }
 
     fun drawScene() {
         context.clearRect(0.0, 0.0, canvas.width.toDouble(), canvas.height.toDouble())
-        drawBoard()
+        boardPainter.drawBoard(context)
     }
 
     fun onMessage(ws: WebSocket, event: Event) {
@@ -157,39 +136,9 @@ class Canvas(val playerProperties: PlayerProperties) {
         canvas.width = window.innerWidth
         canvas.height = window.innerHeight
 
-        playerProperties.screenWidth = canvas.width
-        playerProperties.screenHeight = canvas.height
+        screen.screenWidth = canvas.width
+        screen.screenHeight = canvas.height
         drawScene()
-    }
-
-    fun drawBoard() {
-        val clientCornerCoordinate = playerProperties.screenCorner
-//        var clientCornerModelCoordinate = clientCornerCoordinate.asModelCoordinate()
-
-        context.fillText(("x : " + clientCornerCoordinate.x), 30.0, 30.0)
-        context.fillText(("y : " + clientCornerCoordinate.y), 30.0, 40.0)
-
-        context.beginPath()
-
-        val offsetX = playerProperties.getCornerX() % gridSize * scale
-        val offsetY = playerProperties.getCornerY() % gridSize * scale
-
-        for (x in 0..playerProperties.screenWidth step ((gridSize * scale).toInt())) {
-            context.fillText((x - offsetX).toString(), x - offsetX, 10.0)
-            context.moveTo(x - offsetX, 0.0)
-            context.lineTo(x - offsetX, playerProperties.screenHeight.toDouble())
-        }
-        for (y in 0..playerProperties.screenHeight step ((gridSize * scale).toInt())) {
-            context.fillText((y - offsetY).toString(), 5.0, y - offsetY)
-            context.moveTo(0.0, y - offsetY)
-            context.lineTo(playerProperties.screenWidth.toDouble(), y - offsetY)
-        }
-
-        context.strokeStyle = "black"
-        context.lineWidth = 0.2
-        context.stroke()
-
-        context.closePath()
     }
 }
 

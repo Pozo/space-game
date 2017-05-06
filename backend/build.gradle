@@ -2,6 +2,7 @@ group 'com.github.pozo.spacegame'
 version '1.0-SNAPSHOT'
 
 apply plugin: 'java'
+apply plugin: 'application'
 
 sourceCompatibility = 1.8
 project.ext {
@@ -10,7 +11,16 @@ project.ext {
 repositories {
     mavenCentral()
 }
+mainClassName = 'com.github.pozo.App'
+jar {
+    manifest {
+        attributes "Main-Class": "$mainClassName"
+    }
 
+    from {
+        configurations.compile.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
 dependencies {
     compile project(':core')
     compile "javax.websocket:javax.websocket-api:1.1"
@@ -22,5 +32,6 @@ dependencies {
     compile "io.dropwizard:dropwizard-core:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-db:${dropwizardVersion}"
     compile "io.dropwizard:dropwizard-jdbi:${dropwizardVersion}"
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
 }

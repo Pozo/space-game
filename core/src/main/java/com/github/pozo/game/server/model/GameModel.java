@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by pozo on 2016.06.06..
- */
+
 public class GameModel {
     private final Map<Class<? extends AstronomicalObject>, List<AstronomicalObject>> astronomicalObjects = new HashMap<Class<? extends AstronomicalObject>, List<AstronomicalObject>>();
     private final Map<Class<? extends ArtificialObject>, List<ArtificialObject>> artificialObjects = new HashMap<Class<? extends ArtificialObject>, List<ArtificialObject>>();

@@ -8,9 +8,7 @@ import com.github.pozo.game.server.model.unit.time.modelevents.TimeModelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by pozo on 2016.05.25..
- */
+
 public class Galaxy extends DefaultAstronomicalObject {
     private DefaultAstronomicalObject centralDefaultAstronomicalObjects;
     private ArrayList<DefaultAstronomicalObject> defaultAstronomicalObjects;

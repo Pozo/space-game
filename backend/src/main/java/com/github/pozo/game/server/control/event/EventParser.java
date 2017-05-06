@@ -3,9 +3,6 @@ package com.github.pozo.game.server.control.event;
 import com.github.pozo.game.server.control.event.user.UserEvent;
 import com.github.pozo.game.server.serialize.EventSerializer;
 
-/**
- * Created by pozo on 2016.06.13..
- */
 public class EventParser {
     private final EventSerializer eventSerializer;
 

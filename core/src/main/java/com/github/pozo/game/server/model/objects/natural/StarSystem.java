@@ -11,9 +11,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * Created by pozo on 2016.06.04..
- */
+
 public class StarSystem implements AstronomicalObject {
     private final Star star;
     private final HashMap<DistanceUnit, DefaultAstronomicalObject> astronomicalObjects;

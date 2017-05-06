@@ -4,9 +4,7 @@ import com.github.pozo.game.server.control.event.user.UserEvent;
 import com.github.pozo.game.server.model.objects.artificial.ship.Ship;
 import com.github.pozo.game.server.model.unit.Coordinate;
 
-/**
- * Created by pozo on 2016.06.13..
- */
+
 public class ShipUserEvent extends UserEvent<ShipUserEventTypes, Ship, Coordinate> {
 
     ShipUserEvent(ShipUserEventTypes eventType, Ship eventSubject, Coordinate eventData) {

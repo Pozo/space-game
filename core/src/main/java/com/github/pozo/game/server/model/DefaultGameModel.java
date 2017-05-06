@@ -20,9 +20,7 @@ import com.github.pozo.game.server.model.unit.time.TimeUnits;
 
 import java.util.ArrayList;
 
-/**
- * Created by pozo on 2016.07.02..
- */
+
 public class DefaultGameModel extends GameModel {
     public DefaultGameModel() {
 

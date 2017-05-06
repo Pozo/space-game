@@ -1,8 +1,5 @@
 package com.github.pozo.game.server.control.event.user;
 
-/**
- * Created by pozo on 2016.06.13..
- */
 public class UserEvent<T extends UserEventType, S, D> {
     private final T eventType;
     private final S eventSubject;

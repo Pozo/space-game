@@ -2,9 +2,7 @@ package com.github.pozo.game.server.model.objects.meta;
 
 import com.github.pozo.game.server.model.unit.Coordinate;
 
-/**
- * Created by pozo on 2016.06.16..
- */
+
 public class PlayerProperties {
     private int screenWidth;
     private int screenHeight;

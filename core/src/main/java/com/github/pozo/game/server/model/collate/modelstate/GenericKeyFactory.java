@@ -8,9 +8,7 @@ import com.github.pozo.game.server.model.objects.natural.Planet;
 import com.github.pozo.game.server.model.objects.natural.Star;
 import com.github.pozo.game.server.model.objects.natural.StarSystem;
 
-/**
- * Created by pozo on 2016.07.02..
- */
+
 public class GenericKeyFactory {
     String getTypeID(Class clazz) {
         if (BlackHole.class.equals(clazz)) {

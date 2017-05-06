@@ -5,9 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by pozo on 2016.07.02..
- */
+
 public class Collator<T> {
     private final Map<String, List<T>> collatedElements = new HashMap<String, List<T>>();
     private final CollatorKeyProvider<T> collatorKeyProvider;

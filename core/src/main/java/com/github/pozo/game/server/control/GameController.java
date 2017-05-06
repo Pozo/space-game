@@ -10,9 +10,6 @@ import com.github.pozo.game.server.model.objects.meta.Player;
 import com.github.pozo.game.server.model.objects.meta.PlayerProperties;
 import com.github.pozo.game.server.model.unit.Coordinate;
 
-/**
- * Created by pozo on 2016.06.07..
- */
 public class GameController {
     private final Player player;
     private final GameModel gameModel;

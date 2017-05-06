@@ -15,9 +15,6 @@ import com.github.pozo.game.server.model.unit.Coordinate;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by pozo on 2016.06.06..
- */
 public class Player implements Owner, ModelEventConsumer<ModelEvent> {
     private static final Coordinate INITIAL_COORDINATE = new Coordinate(0, 0);
     private static Player NPC;

@@ -3,9 +3,7 @@ package com.github.pozo.game.server.control.event.user;
 import com.github.pozo.game.server.model.objects.meta.Player;
 import com.github.pozo.game.server.model.objects.meta.PlayerProperties;
 
-/**
- * Created by pozo on 2016.06.16..
- */
+
 public class GameUserEvent extends UserEvent<GameUserEventType, Player, PlayerProperties> {
     GameUserEvent(GameUserEventType eventType, Player eventSubject, PlayerProperties eventData) {
         super(eventType, eventSubject, eventData);

@@ -12,9 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by pozo on 2016.07.02..
- */
+
 public class GameModelCollator {
     private final GameModel gameModel;
     private final PlayerProperties playerProperties;
@@ -34,9 +32,10 @@ public class GameModelCollator {
             for (AstronomicalObject astronomicalObject : objectList) {
                 Coordinate coordinate = astronomicalObject.getCoordinate();
 
-                if (isOnPlayerScreen(playerProperties, coordinate)) {
+                // TODO should rework the authentication and the user property settings
+                //if (isOnPlayerScreen(playerProperties, coordinate)) {
                     astronomicalObjects = collator.collate(astronomicalObject);
-                }
+                //}
             }
         }
         return astronomicalObjects;

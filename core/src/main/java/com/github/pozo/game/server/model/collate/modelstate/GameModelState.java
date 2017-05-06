@@ -8,9 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Created by pozo on 2016.06.29..
- */
+
 public class GameModelState {
     private PlayerProperties playerProperties;
     private Map<String, List<AstronomicalObject>> astronomicalObjects = new HashMap<String, List<AstronomicalObject>>();

@@ -12,9 +12,7 @@ import com.github.pozo.game.server.model.unit.time.modelevents.TimeModelEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Created by pozo on 2016.05.25..
- */
+
 public class Planet extends DefaultAstronomicalObject implements Ownable {
     private Owner owner;
     private ArrayList<DefaultAstronomicalObject> defaultAstronomicalObjects;

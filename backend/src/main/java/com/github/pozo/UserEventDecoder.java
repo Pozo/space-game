@@ -8,9 +8,6 @@ import javax.websocket.DecodeException;
 import javax.websocket.Decoder;
 import javax.websocket.EndpointConfig;
 
-/**
- * Created by pozo on 2016.06.15..
- */
 public class UserEventDecoder implements Decoder.Text<UserEvent> {
     private EventParser eventParser;
 

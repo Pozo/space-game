@@ -1,8 +1,6 @@
 package com.github.pozo.game.server.model.objects.meta;
 
-/**
- * Created by pozo on 2016.06.07..
- */
+
 public class PlayerId {
     private final String id;
 

@@ -1,0 +1,1 @@
+//config.module.exports.devServer.push({ public: "localhost.com" })

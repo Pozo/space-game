@@ -1,6 +1,7 @@
-package com.github.pozo
+package com.github.pozo.model
 
-class Coordinate(var y: Int, var x: Int) {
+class Coordinate(var x: Int, var y: Int) {
+
     override fun toString(): String = "x:" + x.toString() + " , y:" + y.toString()
 }
 

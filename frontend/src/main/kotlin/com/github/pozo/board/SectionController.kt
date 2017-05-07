@@ -1,23 +1,9 @@
-package com.github.pozo
+package com.github.pozo.board
 
+import com.github.pozo.Screen
+import com.github.pozo.model.Coordinate
 import org.w3c.dom.events.MouseEvent
 import kotlin.browser.window
-
-enum class Sections {
-    UNDEFINED,
-    TOP,
-    TOP_LEFT,
-    TOP_RIGHT,
-
-    RIGHT,
-    LEFT,
-
-    BOTTOM,
-    BOTTOM_LEFT,
-    BOTTOM_RIGHT,
-
-    CENTER
-}
 
 class SectionController(val screen: Screen, val canvas: Canvas) {
     var enabled = false
@@ -92,7 +78,7 @@ class SectionController(val screen: Screen, val canvas: Canvas) {
         }
     }
 
-    fun setCurrentSection(mousePosition: Coordinate) {
+    private fun setCurrentSection(mousePosition: Coordinate) {
         if (onTop(mousePosition)) {
             if (onLeft(mousePosition)) {
                 currentSection = Sections.TOP_LEFT
@@ -118,19 +104,19 @@ class SectionController(val screen: Screen, val canvas: Canvas) {
         }
     }
 
-    fun onLeft(coordinate: Coordinate): Boolean {
+    private fun onLeft(coordinate: Coordinate): Boolean {
         return coordinate.x <= controlEdgeWidth
     }
 
-    fun onRight(coordinate: Coordinate): Boolean {
+    private fun onRight(coordinate: Coordinate): Boolean {
         return coordinate.x >= screen.screenWidth - controlEdgeWidth
     }
 
-    fun onTop(coordinate: Coordinate): Boolean {
+    private fun onTop(coordinate: Coordinate): Boolean {
         return coordinate.y <= controlEdgeWidth
     }
 
-    fun onBottom(coordinate: Coordinate): Boolean {
+    private fun onBottom(coordinate: Coordinate): Boolean {
         return coordinate.y >= screen.screenHeight - controlEdgeWidth
     }
 }

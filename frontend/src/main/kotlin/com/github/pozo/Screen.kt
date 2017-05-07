@@ -1,5 +1,7 @@
 package com.github.pozo
 
+import com.github.pozo.model.Coordinate
+
 class Screen(var screenCorner: Coordinate,
              var screenWidth: Int = 0,
              var screenHeight: Int = 0,
@@ -22,7 +24,7 @@ class Screen(var screenCorner: Coordinate,
     }
 
     fun setScale(deltaY: Double) {
-        if (deltaY < 0) {
+        if (deltaY > 0) {
             if (scale > 1) {
                 scale -= 0.5
             }

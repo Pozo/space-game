@@ -1,11 +1,12 @@
-package com.github.pozo
+package com.github.pozo.paint
 
+import com.github.pozo.Screen
 import org.w3c.dom.CanvasRenderingContext2D
 
-class BoardPainter(val screen: Screen) {
+class BoardPainter(val context: CanvasRenderingContext2D, val screen: Screen) : Painter {
     private var gridSize = 42
 
-    fun drawBoard(context: CanvasRenderingContext2D) {
+    fun draw() {
         val clientCornerCoordinate = screen.screenCorner
 //        var clientCornerModelCoordinate = clientCornerCoordinate.asModelCoordinate()
 

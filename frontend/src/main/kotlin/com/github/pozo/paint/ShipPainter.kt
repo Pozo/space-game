@@ -1,75 +1,23 @@
-function Drawer() {
+package com.github.pozo.paint
 
-}
-Drawer.prototype.drawScene = function() {
-    context.clearRect(0, 0, canvas.width, canvas.height);
+import com.github.pozo.Screen
+import com.github.pozo.model.ship.ShipView
+import org.w3c.dom.CanvasRenderingContext2D
 
-    this.drawBoard();
-    this.drawShips();
-}
-Drawer.prototype.drawBoard = function() {
-    var clientCornerCoordinate = playerProperties.getScreenCorner();
-    var clientCornerModelCoordinate = clientCornerCoordinate.asModelCoordinate();
+class ShipPainter(val context: CanvasRenderingContext2D, val screen: Screen) : Painter {
+    private val imagePath: String = "ship.png"
 
-    context.fillText('x : ' + clientCornerModelCoordinate.getX(), 30, 30);
-    context.fillText('y : ' + clientCornerModelCoordinate.getY(), 30, 40);
+    fun draw(shipView: ShipView) {
+        val image = getImage(imagePath)
+        val dx = shipView.x.toDouble() * screen.scale
+        val dy = shipView.y.toDouble() * screen.scale
+        val dw = 25.0 * screen.scale
+        val dh = 25.0 * screen.scale
 
-    context.beginPath();
-
-    var offsetX = clientCornerCoordinate.getX() % gridSize * scale;
-    var offsetY = clientCornerCoordinate.getY() % gridSize * scale;
-
-    for (var x = 0; x <= playerProperties.getScreenWidth(); x += gridSize * scale) {
-        context.fillText(x - offsetX, x - offsetX, 10);
-        context.moveTo(x - offsetX, 0);
-        context.lineTo(x - offsetX, playerProperties.getScreenHeight());
+        context.drawImage(image, dx, dy, dw, dh)
     }
-    for (var y = 0; y <= playerProperties.getScreenHeight(); y += gridSize * scale) {
-        context.fillText(y - offsetY, 5, y - offsetY);
-        context.moveTo(0, y - offsetY);
-        context.lineTo(playerProperties.getScreenWidth(), y - offsetY);
-    }
-    context.strokeStyle = "black";
-    context.lineWidth = 0.2;
-    context.stroke();
-
-    context.closePath();
 }
-
-Drawer.prototype.drawShips = function() {
-    var ships = model.getShips();
-    var previousShips = model.getPreviousShips();
-
-    if (ships) {
-        for (var i = 0; i < ships.length; i++) {
-            var ship = ships[i];
-            var previousShip = previousShips[i];
-            var shipCurrentCoordinate = ship.getScreenCoordinate();
-            var previousShipCoordinate = previousShip.getScreenCoordinate();
-
-            var initialX = previousShipCoordinate.getX();
-            var initialY = previousShipCoordinate.getY();
-
-            var finalX = shipCurrentCoordinate.getX();
-            var finalY = shipCurrentCoordinate.getY();
-
-            var finalTime = 1000;
-            var percentage = currentTime / finalTime;
-
-            var interpolatedX = this.interpolate(initialX, finalX, percentage);
-            var interpolatedY = this.interpolate(initialY, finalY, percentage);
-
-            this.drawShipRoute(ship);
-            this.drawShipSelection(ship);
-
-            context.beginPath();
-            context.drawImage(ship.getShape(), interpolatedX, interpolatedY);
-            context.closePath();
-
-        }
-    }
-
-}
+/*
 Drawer.prototype.interpolate = function(initialNumber, finalNumber, progress) {
     return initialNumber + (finalNumber - initialNumber) * progress;
 }
@@ -143,3 +91,4 @@ Drawer.prototype.arrowHead = function(x, y, rotation) {
 
     context.restore();
 }
+*/

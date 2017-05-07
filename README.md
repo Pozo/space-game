@@ -13,6 +13,7 @@ In the future I plan to use some kind of Rx library with websocket.
  - core - game logic
  - backend - connection specific stuffs
  - frontend - ui and connection specific stuffs
+ - assets from here http://www.kenney.nl/assets?s=space
 
 ## Installation
   

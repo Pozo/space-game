@@ -1,28 +1,39 @@
 package com.github.pozo
 
-import org.w3c.dom.events.Event
 import kotlin.browser.document
-import kotlin.browser.window
+import kotlin.dom.hasClass
 
 fun main(args: Array<String>) {
+    var application: ApplicationBase? = null
+
+    val state: dynamic = module.hot?.let { hot ->
+        hot.accept()
+
+        hot.dispose { data ->
+            data.appState = application?.dispose()
+            application = null
+        }
+
+        hot.data
+    }
 
     if (document.body != null) {
-        draw()
+        application = start(state)
     } else {
-        document.addEventListener("DOMContentLoaded", {
-            draw()
-        })
-
+        application = null
+        document.addEventListener("DOMContentLoaded", { application = start(state) })
     }
 }
 
-private fun draw() {
-    val playerProperties = Screen(Coordinate(0, 0), window.innerWidth, window.innerHeight)
-    val canvas = Canvas(playerProperties)
+fun start(state: dynamic): ApplicationBase? {
+    if (document.body?.hasClass("kotlin-app") ?: false) {
+        val application = MainApplication()
 
-    canvas.connectAndDraw()
+        @Suppress("UnsafeCastFromDynamic")
+        application.start(state?.appState ?: emptyMap())
 
-    window.addEventListener("resize", { e: Event ->
-        canvas.resizeCanvas()
-    }, false)
+        return application
+    } else {
+        return null
+    }
 }
